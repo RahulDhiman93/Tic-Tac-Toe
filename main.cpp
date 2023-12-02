@@ -1,11 +1,11 @@
 #include <iostream>
 using namespace std;
 
-char space[3][3] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}};
-int digit;
+char space[3][3] = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 int row;
 int column;
 char token = 'x';
+int inputEntered = 0;
 
 void printSpace() {
     cout<<"    |    |     \n";
@@ -19,7 +19,26 @@ void printSpace() {
     cout<<"    |    |     \n";
 }
 
+bool checkDone() {
+    int i;
+    for(i=0; i < 3; i++){
+        if (space[i][0] == space[i][1] && space[i][1] == space[i][2] && space[i][0] != ' ') {
+            return true;
+        }
+    }
+    for(i=0; i < 3; i++){
+        if (space[0][i] == space[1][i] && space[1][i] == space[2][i]  && space[0][i] != ' '){
+            return true;
+        }
+    }
+    if ((space[0][0] == space[1][1] && space[1][1] == space[2][2]  && space[0][0] != ' ') || (space[0][2] == space[1][1] && space[1][1] == space[2][0]  && space[0][2] != ' '))  {
+        return true;
+    }
+    return false;
+}
+
 void gameLogic(string player1, string player2) {
+    int digit;
 
     if (token == 'x') {
         cout<<player1<<" please enter: ";
@@ -29,6 +48,8 @@ void gameLogic(string player1, string player2) {
         cout<<player2<<" please enter: ";
         cin>>digit;
     }
+
+    inputEntered++;
 
     switch (digit) {
         case 1:
@@ -69,22 +90,38 @@ void gameLogic(string player1, string player2) {
             break;
         default:
             cout<<"Invalid entry"<<endl;
+            break;
     }
 
     if(token == 'x' && space[row][column] != 'x' && space [row][column] != '0') {
         space[row][column] = 'x';
         token = '0';
         printSpace();
-        gameLogic(player1, player2);
+        if (!checkDone()) {
+            gameLogic(player1, player2);
+        } else {
+            cout<<player1<<" won!";
+        }
     } else if(token == '0' && space[row][column] != 'x' && space [row][column] != '0') {
         space[row][column] = '0';
         token = 'x';
         printSpace();
-        gameLogic(player1, player2);
+        if (!checkDone()) {
+            gameLogic(player1, player2);
+        } else {
+            cout<<player2<<" won!";
+        }
     } else {
         printSpace();
-        cout<<"No empty space left!";
-        return;
+        if (inputEntered > 9) {
+            cout<<"No empty space left!\n";
+            cout<<"Match Draw";
+            return;
+        } else {
+            cout<<"Space already filled!\n";
+            inputEntered--;
+            gameLogic(player1, player2);
+        }
     }
 }
 
